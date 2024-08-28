@@ -1,0 +1,160 @@
+{% extends "headers.html" %}
+{% block content %}
+<!-- Main Content -->
+<main style="color: white; background-image: url('https://cdn.pixabay.com/photo/2024/01/08/15/54/defile-8495836_1280.jpg'); background-size: cover;">
+  <div class="container">
+    <h1 style="color: black;">Weather Information</h1>
+    <h5 ><b >Location:</b> {{ weather_data['resolvedAddress'] }}</h5>
+    <table  style="background-color: transparent; color: black; border: 1px solid white;">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Current Weather Conditions</th>
+          <th>Max Temperature (in °C)</th>
+          <th>Min Temperature (in °C)</th>
+          <th>Precipitation Probability</th>
+          <th>Humidity</th>
+          <th>Weather Alerts</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for weather_data_item in weather_data['days'] %}
+        <tr>
+          <td>{{ weather_data_item['datetime'] }}</td>
+          <td>{{ weather_data_item['conditions'] }}</td>
+          <td>{{ weather_data_item['tempmax'] }}</td>
+          <td>{{ weather_data_item['tempmin'] }}</td>
+          <td>{{ weather_data_item['precipprob'] }}</td>
+          <td>{{ weather_data_item['humidity'] }}</td>
+          <td>{{ weather_data_item['description'] }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="container">
+    <!-- Paragraph of plan with markdown syntax -->
+    <h1 style="font-size: 2.5em; font-weight: bold;color: black;">Planned Itinerary</h1>
+ 
+      <h6 style="font-size: 1.2em; font-weight: 600;">
+        *This is a tentative itinerary, so please be flexible.*
+      </h6>
+   
+
+    <div id="markdown-content" style="color: white; font-size: 1.2em; font-weight: 600;">{{ plan }}</div>
+  </div>
+
+  <!-- MAP-->
+  <div class="container">
+    <!-- Currently hardcoded for atlan project as I dont have google maps API keys -->
+    <h1 style="font-size: 2.5em; font-weight: bold; color:white; text-align: center;">View On Map</h1>
+    <div style="display: flex; justify-content: center; align-items: center;">
+      <iframe 
+        src="https://www.google.com/maps/embed?pb=!1m28!1m12!1m3!1d3803460.960067855!2d84.45166414145217!3d21.41676804073022!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m13!3e6!4m5!1s0x3a1909d2d5170aa5%3A0xfc580e2b68b33fa8!2sBhubaneswar%2C%20Odisha!3m2!1d20.2960587!2d85.8245398!4m5!1s0x39f882db4908f667%3A0x43e330e68f6c2cbc!2sKolkata%2C%20West%20Bengal!3m2!1d22.5743545!2d88.3628734!5e0!3m2!1sen!2sin!4v1724837956423!5m2!1sen!2sin" 
+        width="600" 
+        height="450" 
+        style="border:0;" 
+        allowfullscreen="" 
+        loading="lazy" 
+        referrerpolicy="no-referrer-when-downgrade">
+      </iframe>
+    </div>
+  </div>
+  
+
+ 
+</main>
+
+<!-- Icon -->
+<div class="floating-container">
+  <div class="element-container">
+    <!-- Custom Download Button -->
+    <div id="download" class="floating-button" style="cursor: pointer;">
+      <img src="https://cdn.pixabay.com/animation/2022/12/05/10/29/10-29-30-682_512.gif" alt="Download" style="width: 40px; height: 40px;" />
+    </div>
+  </div>
+</div>
+
+
+<!-- Download libraries -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
+  integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg=="
+  crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!-- 
+    This script sets a timeout function to remove all elements with the class "alert" after a certain duration. 
+    It first sets the opacity of the elements to 0 to initiate the transition, and then removes the elements after the transition duration. 
+    The delay for the transition duration can be adjusted by changing the value of the second setTimeout function. 
+    -->
+<script>
+  setTimeout(function () {
+    const alerts = document.querySelectorAll(".alert");
+
+    alerts.forEach(function (alert) {
+      // Set opacity to 0 to initiate the transition
+      alert.style.opacity = 0;
+    });
+
+    // After the transition duration, remove the alert elements
+    setTimeout(function () {
+      alerts.forEach(function (alert) {
+        alert.style.display = "none";
+      });
+    }, 1000); // Adjust this delay to match your transition duration (in this case, 1 second)
+  }, 5000);
+</script>
+
+<!-- This script tag includes the markdown-it library from the specified CDN. -->
+<script src="https://cdn.jsdelivr.net/npm/markdown-it@11.0.1/dist/markdown-it.min.js"></script>
+
+<!-- This script creates a Markdown parser, converts the Markdown text to HTML, and inserts the converted HTML into the document. The Markdown text is obtained from an element with the ID "markdown-content". -->
+<script>
+  // Create a Markdown parser
+  const md = window.markdownit();
+
+  // Convert the Markdown text to HTML
+  const html = md.render(
+    document.getElementById("markdown-content").textContent
+  );
+
+  // Insert the converted HTML into the document
+  document.getElementById("markdown-content").innerHTML = html;
+
+  // PDF of itinerary
+ 
+  document.getElementById('download').addEventListener('click', function () {
+    // Get the main content element
+    var element = document.querySelector('main');
+
+    // Temporarily change background color to black and text color to white for PDF generation
+    element.style.backgroundColor = "black";
+    element.style.color = "white";
+
+    // PDF generation options
+    var opt = {
+      margin: 0.5,
+      filename: 'itinerary.pdf',
+      image: { type: 'png', quality: 100 },
+      html2canvas: { scale: 0.8 },
+      jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' },
+    };
+
+    // Generate the PDF
+    html2pdf().set(opt).from(element).toPdf().get('pdf').then(function (pdf) {
+      var totalPages = pdf.internal.getNumberOfPages();
+      for (var i = 1; i <= totalPages; i++) {
+        pdf.setPage(i);
+      }
+
+      // Save the PDF
+      pdf.save('itinerary.pdf');
+
+      // Revert styles back to original after PDF generation
+      element.style.backgroundColor = "transparent"; // Reset to original
+      element.style.color = "white";
+    });
+  });
+
+</script>
+{% endblock %}
+</body>
+</html>
