@@ -26,7 +26,7 @@ Simple website where user can enter his/her preferences like Start/End location,
 
 
 ## Working
-The entered details/preferences are provided to Google's Palm model using API, which then generates Travel itinerary according to the preferences. I used Visual Crossing Weather API for providing weather conditions during the travel duration. And google iframe tag to embeed google map on the website, apart from that the doenload feature is implemented using html2pdf.js.
+The entered details/preferences are provided to Google's Palm model using API, which then generates Travel itinerary according to the preferences. I used Visual Crossing Weather API for providing weather conditions during the travel duration. And google iframe tag to embeed google map on the website, apart from that the download feature is implemented using html2pdf.js.
 
 ## How to Setup this Project
 
